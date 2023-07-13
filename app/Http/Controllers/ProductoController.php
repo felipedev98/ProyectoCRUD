@@ -20,9 +20,7 @@ class ProductoController extends Controller
 
     {
         return view('productos.index', [
-            // 'productos' => Producto::with('user')->latest()->get(),
             'productos' => Producto::all(),
-            // 'bodegas' => Bodega::with('user')->latest()->get(),
             'bodegas' => Bodega::all(),
         ]);
     }
@@ -30,23 +28,15 @@ class ProductoController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    // public function create(Producto $producto): View
-    // {
-    //     return view('productos.create', [
-    //         'producto' => $producto,
-    //     ]);
-    // }
 
-    public function create(Producto $producto, Bodega $bodega): View
+    public function create()
     {
-        // $bodega = Bodega::all();
+        $producto = Producto::all();
+        $bodegas = Bodega::all();
+        $tipos = ['Pino', 'Lenga'];
 
-        return view('productos.create', [
-            'producto' => $producto,
-            // 'bodega' => $bodega,
-            'bodegas' => Bodega::all(),
-            
-        ]);
+        return view('productos.create', compact('bodegas', 'producto', 'tipos'));
+
     }
 
     /**
@@ -57,14 +47,22 @@ class ProductoController extends Controller
         $validated = $request->validate([
             'nombre' => 'required|string|max:100',
             'descripcion' => 'required|string|max:100',
-            'kg' => 'required',
-            'bodega_id' => 'required',
-            // 'bodega_nombre' => 'required',
+            'kg' => 'required|in:15,20,25',
+            'tipo' => 'required|in:Pino,Lenga',
+            'cantidad' => 'required|integer|min:1',
+            'bodega_id' => 'required|exists:bodegas,id',
+        ], [
+            'cantidad.min' => 'La cantidad debe ser un número mayor o igual a uno.',
+            'bodega_id.required' => 'Debes seleccionar una bodega.',
+            'tipo.in' => 'Debes seleccionar un tipo.',
+            'kg.in' => 'Debes seleccionar un formato.',
         ]);
+
  
         $request->user()->productos()->create($validated); 
 
-        return redirect(route('productos.index'));
+
+        return redirect()->route('productos.index')->with('success', 'Producto creado correctamente.');
     }
 
     /**
@@ -80,29 +78,47 @@ class ProductoController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Producto $producto): View
+    public function edit($id)
     {
-        return view('productos.edit', [
-            'producto' => $producto,
-        ]);
+        $producto = Producto::findOrFail($id);
+        $bodegas = Bodega::all(); // Obtenemos todas las bodegas disponibles
+        $tipos = ['Pino', 'Lenga'];
+        $cantidad = $producto->cantidad;
+
+        return view('productos.edit', compact('producto', 'bodegas', 'tipos', 'cantidad')); //Pasamos las variables a la vista utilizando el metodo compact
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Producto $producto): RedirectResponse
+
+
+    public function update(Request $request, $id)
     {
-        $this->authorize('update', $producto);
- 
-        $validated = $request->validate([
+        $request->validate([
             'nombre' => 'required|string|max:100',
             'kg' => 'required',
-            
+            'tipo' => 'required',
+            'descripcion' => 'required',
+            'cantidad' => 'required|integer|min:1',
+            'bodega_id' => 'required|exists:bodegas,id',
+        ], [
+            'cantidad.min' => 'La cantidad debe ser un número mayor o igual a uno.',
         ]);
- 
-        $producto->update($validated);
- 
-        return redirect(route('productos.index'));
+
+        $producto = Producto::findOrFail($id);//Metodo para buscar el modelo por su ID, en este contexto se utiliza para encontrar el producto especifico a actualizar.
+        $producto->bodega_id = $request->input('bodega_id');
+        $producto->nombre = $request->input('nombre');
+        $producto->kg = $request->input('kg');
+        $producto->tipo = $request->input('tipo');
+        $producto->descripcion = $request->input('descripcion');
+        $producto->cantidad = $request->input('cantidad');
+        
+        // Guardar otros cambios en los campos del producto si es necesario
+        
+        $producto->save();
+
+        return redirect()->route('productos.index')->with('success', 'Producto actualizado correctamente.');
     }
 
     /**
@@ -113,8 +129,8 @@ class ProductoController extends Controller
         // $this->authorize('delete', $producto);
  
         $producto->delete();
- 
-        return redirect(route('productos.index'));
+    
+        return redirect()->route('productos.index')->with('success', 'Producto eliminado correctamente.');
     }
 }
 

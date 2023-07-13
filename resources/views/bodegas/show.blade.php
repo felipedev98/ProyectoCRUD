@@ -33,12 +33,18 @@
                             <th scope="col" class="px-6 py-3">
                                 Nombre
                             </th>
-
                             <th scope="col" class="px-6 py-3">
-                                Descripción
+                                Tipo
                             </th>
                             <th scope="col" class="px-6 py-3">
                                 Formato
+                            </th>
+                            <th scope="col" class="px-6 py-3">
+                                Cantidad
+                            </th>
+                            
+                            <th scope="col" class="px-6 py-3">
+                                Descripción
                             </th>
 
                         </tr>
@@ -47,28 +53,41 @@
                     <tbody>
 
                         @foreach ($productos as $producto)
-                        <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
-                            <td class="px-6 py-3">
-                                {{ $producto->nombre }}
-                            </td>
-
-                        </tr>
-                        @endforeach
-
-                        {{-- @foreach ($productos->$bodega as $item)
                             <tr class="bg-white border-b dark:bg-gray-900 dark:border-gray-700">
                                 <td class="px-6 py-3">
-                                    {{ $item->producto->nombre }}
+                                    {{ $producto->nombre }}
+                                </td>
+                                <td class="px-6 py-3">
+                                    {{ $producto->tipo }}
+                                </td>
+                                <td class="px-6 py-3">
+                                    {{ $producto->kg }} KG
+                                </td>
+                                <td class="px-6 py-3">
+                                    {{ $producto->cantidad }}
                                 </td>
 
+                                <td class="px-6 py-3">
+                                    {{ $producto->descripcion }}
+                                </td>
+
+
                             </tr>
-                        @endforeach --}}
+                        @endforeach
+
                     </tbody>
                 </table>
 
                 @else
-                <div class="px-6 py-3">
-                    No existen productos asociados.
+                <div class="flex items-center p-4 text-sm text-gray-800 rounded-lg bg-gray-50 dark:bg-gray-800 dark:text-gray-300">
+                    <svg class="flex-shrink-0 inline w-4 h-4 mr-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M10 .5a9.5 9.5 0 1 0 9.5 9.5A9.51 9.51 0 0 0 10 .5ZM9.5 4a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM12 15H8a1 1 0 0 1 0-2h1v-3H8a1 1 0 0 1 0-2h2a1 1 0 0 1 1 1v4h1a1 1 0 0 1 0 2Z"/>
+                    </svg>
+                    <div class="text-base">
+                    <span class="font-bold">No existen productos asociados en {{$bodega->nombre}}.</span>
+                    </div>
+        
+        
                 </div>
                 
             @endif
@@ -76,15 +95,7 @@
                 
         </div> <br>
 
-        <div class="space-x-2">
-
-            {{-- <x-primary-button>{{ __('Agregar') }}</x-primary-button> --}}
-
-            {{-- <a href="{{ route('bodegas.edit', $bodega) }}" class="inline-flex items-center px-4 py-2 bg-gray-800 border border-transparent 
-            rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-700 focus:bg-gray-700 active:bg-gray-900 
-            focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition ease-in-out duration-150">Editar</a> --}}
-
-    
+        <div class="space-x-2">    
             <a href="{{ route('bodegas.index') }}" class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 
                 rounded-md font-semibold text-xs text-gray-700 uppercase tracking-widest shadow-sm hover:bg-gray-50 focus:outline-none 
                 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150" >Volver

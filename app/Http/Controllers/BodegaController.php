@@ -21,7 +21,6 @@ class BodegaController extends Controller
         // return view('bodegas.index');
 
         return view('bodegas.index', [
-            // 'bodegas' => Bodega::with('user')->latest()->get(),
             'bodegas' => Bodega::all(),
             'productos' => Producto::all(),
         ]);
@@ -59,34 +58,19 @@ class BodegaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Bodega $bodega): View
-    {
-        return view('bodegas.show', [
-            'bodega' => $bodega,
-            'productos' => Producto::all(),
-        ]);
-    }
-
-    public function show_productos(): View
-    {
-        return view('bodegas.show', [
-            'productos' => Producto::all(),
-            // $productos = Producto::all();
-
-        ]);
-    }
-
-    // public function show_productos(): View
-    // {
-
-    //     return
-        
-    //     $productos = Producto::all();
-
-    //     echo($productos);
 
 
-    // }
+     public function show($id)
+     {
+        // Identificador unico de bodega a mostrar
+        $bodega = Bodega::find($id);
+
+        // Uso de relacion en modelo Bodega para obtener productos asociados a esa bodega
+        $productos = $bodega->productos;
+        // Creacion de array asociativo en funcion compact
+        return view('bodegas.show', compact('bodega', 'productos'));
+
+     }
 
 
 
@@ -123,12 +107,20 @@ class BodegaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Bodega $bodega): RedirectResponse
-    {
-        $this->authorize('delete', $bodega);
  
-        $bodega->delete();
- 
-        return redirect(route('bodegas.index'));
+
+    public function destroy($id)
+{
+    $bodega = Bodega::find($id);
+    
+    // Verificar si la bodega tiene productos asociados
+    if ($bodega->productos()->exists()) {
+        return redirect()->back()->with('error', 'No se puede eliminar la bodega porque tiene productos en su interior.');
     }
+    
+    // Si la bodega no tiene productos asociados, se puede eliminar
+    $bodega->delete();
+    
+    return redirect()->route('bodegas.index')->with('success', 'Bodega eliminada correctamente.');
+}
 }

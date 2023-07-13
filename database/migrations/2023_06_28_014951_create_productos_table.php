@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('bodega_id')->constrained()->cascadeOnDelete();
             $table->string('nombre');
-            $table->string('descripcion');
+            $table->string('tipo');
             $table->string('kg');
-            // $table->string('cantidad');
+            $table->integer('cantidad');
+            $table->string('descripcion');
             $table->timestamps();
         });
     }
